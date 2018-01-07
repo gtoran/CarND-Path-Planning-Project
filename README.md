@@ -61,7 +61,7 @@ After setting up these areas of interest, execution is carried out by constantly
 
 ## Results
 
-After several iterations, I was able to achieve the project rubric standards by driving 4.32 miles without a single incident:
+After several iterations, I was able to achieve the project rubric standards by driving 4.32 miles without a single incident. Screenshots included below and in the `results` directory.
 
 ![Milestone](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone.jpg)
 
