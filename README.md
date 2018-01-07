@@ -61,17 +61,17 @@ After setting up these areas of interest, execution is carried out by constantly
 
 ## Results
 
-After several iterations, I was able to achieve the project rubric standards by driving 4.32 without a single incident:
+After several iterations, I was able to achieve the project rubric standards by driving 4.32 miles without a single incident:
 
-![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone.jpg)
+![Milestone](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone.jpg)
 
 I kept the vehicle driving around and more than doubled the required distance:
 
-![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone-2.jpg)
+![Milestone x2](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone-2.jpg)
 
 I finally ended up having a slight graze with a vehicle after 21 miles:
 
-![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/maximum.jpg)
+![Top Distance](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/maximum.jpg)
 
 ---
 
