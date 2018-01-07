@@ -250,7 +250,7 @@ int main() {
 					auto previous_path_x = j[1]["previous_path_x"];
 					auto previous_path_y = j[1]["previous_path_y"];
 
-					// Previous path's end s and d values 
+					// Previous path end s and d values 
 					double end_path_s = j[1]["end_path_s"];
 					double end_path_d = j[1]["end_path_d"];
 
@@ -265,8 +265,8 @@ int main() {
 
 					// A couple of state booleans used below to signal and condition lane changes
 					bool too_close = false;
-					bool car_left = true;
-					bool car_right = true;
+					bool can_change_left = true;
+					bool can_change_right = true;
 					bool change_lane = false;
 
 					for (int i = 0; i < sensor_fusion.size(); i++) 
@@ -283,9 +283,11 @@ int main() {
 
 						check_car_s += ((double)prev_size * 0.02*check_speed);
 						
+						// This is the fun part! Based on the data provided in the walkthrough video, we know that the lanes have a specific fixed width
+						// This width is used to determine the current lane
 						if ((check_car_s > car_s - 15) && ((check_car_s - car_s) < 35))
 						{
-							// Determine current lane
+							// Determine current lane, based on width and frenet coordinate d
 							if (d > 0 && d < lane_width) 
 							{
 								current_lane = 0;
@@ -299,20 +301,23 @@ int main() {
 								current_lane = 2;
 							}
 
-							// Determine if at edge
+							// Determine if at edge of driveable road
 							if (current_lane < lane && (current_lane > lane - 2)) 
 							{
-								car_left = false;
+								can_change_left = false;
 							} 
 							else if (current_lane > lane && (current_lane < lane + 2)) 
 							{
-								car_right = false;
+								can_change_right = false;
 							}
 						}
 
+						// Detect if there's a car in my lane, and if so, check if we're too close
+						// If we're close, we should slow down to avoid colliding, and maybe try to change the lane
+						// to see if there's a more optimal path.
 						if (d < (2 + lane * 4 + 2) && d > (2 + lane * 4 - 2)) 
 						{
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < 35)) 
+							if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) 
 							{
 								change_lane = true;
 								too_close = true;
@@ -320,25 +325,25 @@ int main() {
 						}
 					}
 
-					// If a lane change is signaled from the code above, incremet or decrement accordingly
+					// If a lane change is signaled from the code above, increment or decrement the lane accordingly
 					if (change_lane) 
 					{
-						if (car_right && lane != 2)
+						if (can_change_right && lane != 2)
 						{
 							lane = lane + 1;
 						} 
-						else if(car_left && lane != 0) 
+						else if (can_change_left && lane != 0) 
 						{
 							lane = lane - 1;
 						}
 					} 
-					else 
+					else // Try to default back to the middle lane whenever possible
 					{
-						if (lane > 1 && car_left) 
+						if (lane > 1 && can_change_left) 
 						{
 							lane = lane - 1;
 						} 
-						else if (lane < 1 && car_right) 
+						else if (lane < 1 && can_change_right) 
 						{
 							lane = lane + 1;
 						}
