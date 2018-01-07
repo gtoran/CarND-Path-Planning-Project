@@ -1,16 +1,33 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
    
-### Simulator.
-You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases).
+## Dependencies
 
-### Goals
+* cmake >= 3.5
+ * All OSes: [click here for installation instructions](https://cmake.org/install/)
+* make >= 4.1
+  * Linux: make is installed by default on most Linux distros
+  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
+  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
+* gcc/g++ >= 5.4
+  * Linux: gcc / g++ is installed by default on most Linux distros
+  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
+  * Windows: recommend using [MinGW](http://www.mingw.org/)
+* [uWebSockets](https://github.com/uWebSockets/uWebSockets)
+  * Run either `install-mac.sh` or `install-ubuntu.sh`.
+  * If you install from source, checkout to commit `e94b6e1`, i.e.
+    ```
+    git clone https://github.com/uWebSockets/uWebSockets 
+    cd uWebSockets
+    git checkout e94b6e1
+    ```
+
+## Requirements
+
+* Udacity CarND Term 3 Simulator (available at the [releases tab (https://github.com/udacity/self-driving-car-sim/releases) of the Self Driving Car Simulator repository).
+
+## Goals
 In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
-
-#### The map of the highway is in data/highway_map.txt
-Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
-
-The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
 
 ## Basic Build Instructions
 
@@ -18,6 +35,52 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 2. Make a build directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./path_planning`.
+5. Run the CarnD Term 3 Simulator and observe results.
+
+## Reflection
+
+Path planning is a key role in self driving vehicles, since it aggregates continuous real-world data (sensors) and predetermined rules (driving regulations, comfortable maneuvering, etc.) in order to generate the path the vehicle must pursue. A deterministic path works only in theory; in the real world we need to rely on continuously changing environmental factors and factor those in to make quick and safe decisions. If broken down into smaller pieces, path planning would be the glue that holds together the following concepts:
+
+### Lane management
+
+Knowing the current lane and drivable lanes around the vehicle is a key factor to setup a correct path plan. This is something that the path planner needs to keep track of in order to determine if there’s a more optimal path by changing lanes. In `main.cpp` (lines 286-321), lane is determined by using Frenet coordinates and the lane width, which in this scenario is constant. Another factor to keep in mind is that the simulation only accounts for three lanes constantly. In the real world, this changes constantly depending on the road (highway, urban street, off-road, etc).
+
+Having lanes around the vehicle is not enough. The data provided by sensors enables the program to determine if it’s possible to shift the vehicle into a new lane without colliding with other fellow vehicles. This is handled throughout lines 313-345.
+
+### Distance management
+
+Distance management is crucial to prevent head-on collisions and lateral impact when changing lanes. Sensor fusion data allows the program to determine if it has to modify its speed to prevent hitting another vehicle in front, or if it should wait a little bit before shifting lanes. This is done throughout lines 313-320.
+
+### Speed management
+
+Speed management is important in order to comply with driving regulations (speed limits) and to execute evasive or overtaking maneuvers, all while providing a comfortable experience to the passengers on-board. Lines 348-355 handle acceleration and deceleration based on the distance with the vehicle in front.
+
+---
+
+After setting up these areas of interest, execution is carried out by constantly generating the best possible path (437-456) based on coordinate calculations (364-434) that execute smooth speed and lane changes. It’s worth mentioning that the Spline library suggested by the guidelines allows the vehicle to safely and gradually move to a desired lane without causing discomfort to passengers on-board.
+
+## Results
+
+After several iterations, I was able to achieve the project rubric standards by driving 4.32 without a single incident:
+
+![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone.jpg)
+
+I kept the vehicle driving around and more than doubled the required distance:
+
+![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/milestone-2.jpg)
+
+I finally ended up having a slight graze with a vehicle after 21 miles:
+
+![Linear Equation](https://gtoran.github.io/repository-assets/CarND-Path-Planning-Project/maximum.jpg)
+
+---
+
+## Useful information
+
+#### The map of the highway is in data/highway_map.txt
+Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
+
+The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
 
 Here is the data provided from the Simulator to the C++ Program
 
@@ -63,78 +126,3 @@ the path has processed since last time.
 ## Tips
 
 A really helpful resource for doing this project and creating smooth trajectories was using http://kluge.in-chemnitz.de/opensource/spline/, the spline function is in a single hearder file is really easy to use.
-
----
-
-## Dependencies
-
-* cmake >= 3.5
- * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-* [uWebSockets](https://github.com/uWebSockets/uWebSockets)
-  * Run either `install-mac.sh` or `install-ubuntu.sh`.
-  * If you install from source, checkout to commit `e94b6e1`, i.e.
-    ```
-    git clone https://github.com/uWebSockets/uWebSockets 
-    cd uWebSockets
-    git checkout e94b6e1
-    ```
-
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-
-## Project Instructions and Rubric
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
